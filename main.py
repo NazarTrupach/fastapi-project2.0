@@ -1,4 +1,5 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Path
+from typing import Optional
 
 app = FastAPI()
 
@@ -12,6 +13,6 @@ inventory = {
 }
 
 
-@app.get("/get-item/{item_id}/{name}")
-def get_item(item_id: int, name: str):
+@app.get("/get-item/{item_id}/")
+def get_item(item_id: int = Path(..., description="The Api for your gods", gt=0, le=5)):
     return inventory[item_id]
