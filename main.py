@@ -11,18 +11,24 @@ class Item(BaseModel):
     brand: Optional[str] = None
 
 
+class UpdateItem(BaseModel):
+    name: Optional[str] = None
+    price: Optional[float] = None
+    brand: Optional[str] = None
+
+
 inventory = {}
 
 
 # Path parameters
 @app.get("/get-item/{item_id}/")
-async def get_item(item_id: int = Path(..., description="The Api for your gods", gt=0)):
+def get_item(item_id: int = Path(..., description="The Api for your gods", gt=0)):
     return inventory[item_id]
 
 
 # Query Parameters
 @app.get("/get-by-name")
-async def get_item(name: str = Query(title="Name", description="Name of item")):
+def get_item(name: str = Query(title="Name", description="Name of item")):
     for item_id in inventory:
         if inventory[item_id].name == name:
             return inventory[item_id]
@@ -31,10 +37,24 @@ async def get_item(name: str = Query(title="Name", description="Name of item")):
 
 # Request body and Post method
 @app.post("/create-item{item_id}")
-async def create_item(item_id: int, item: Item):
+def create_item(item_id: int, item: Item):
     if item_id in inventory:
         return {"error": "Item ID already exist!"}
 
     inventory[item_id] = item
     return inventory[item_id]
 
+
+# PUT Method
+@app.put("/update-item/{item_id}")
+def update_item(item_id: int, item: UpdateItem):
+    if item_id not in inventory:
+        return {"error": "Item ID does not  exist!"}
+
+    if item.name != None:
+        inventory[item_id].name = item.name
+    if item.price != None:
+        inventory[item_id].price = item.price
+    if item.brand != None:
+        inventory[item_id].brand = item.brand
+    return inventory[item_id]
